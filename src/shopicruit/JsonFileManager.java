@@ -40,13 +40,12 @@ public class JsonFileManager {
 	public JSONArray getJsonObjArray() {
 		JSONParser parser = new JSONParser();
 		
-		JSONArray arr; 
-		System.out.println(getFilename());
+		JSONArray arr;
 		try {
 			FileReader reader = new FileReader(getFilename());
 			JSONObject jsonObj = (JSONObject) parser.parse(reader);
 			
-			arr = (JSONArray)jsonObj.get("total_price");
+			arr = (JSONArray)jsonObj.get("orders");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

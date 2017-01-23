@@ -1,7 +1,9 @@
 package shopicruit;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -9,7 +11,7 @@ import org.json.simple.JSONObject;
 public class TotalRevenueCalculator {
 	
 	private static JsonFileManager fileManager;
-	private static List<ShopifyOrder> orders;
+	private static ArrayList<ShopifyOrder> orders = new ArrayList<ShopifyOrder>();
 	
 	private static String getUserInput(String prompt) {
 		Scanner scanner = new Scanner(System.in);
@@ -27,18 +29,35 @@ public class TotalRevenueCalculator {
 		
 		return rev;
 	}
+	
+	private static double getTotalRevenueUSD() {
+		double revUSD = 0;
+		for(ShopifyOrder order : orders)
+			revUSD += order.getTotalPriceUSD();
+		
+		return revUSD;
+	}
+	
+	private static Set<String> getSetOfCurrencies() {
+		Set<String> currencies = new HashSet<String>();
+		
+		for(ShopifyOrder order : orders)
+			currencies.add(order.getCurrency());
+		
+		return currencies;
+	}
 
 	public static void main(String[] args) {
 		System.out.println("Welcome to the Total Revenue Calculator");
 		
 		while(true) {
-			String filename = getUserInput("Please enter the filename/filepath containing the list of orders: ");
+			String filename = getUserInput("Please enter the filename/file path containing the list of orders: ");
 			fileManager = new JsonFileManager(filename);
 			
 			if(fileManager.isValid())
 				break;
 			else
-				System.out.println("Filename/filepath is invalid please try again");
+				System.out.println("Filename/file path is invalid please try again");
 		}
 		
 		
@@ -50,8 +69,14 @@ public class TotalRevenueCalculator {
 		}
 		
 		double totalRev = getTotalRevenue();
+		for(String curr : getSetOfCurrencies())
+			System.out.println(curr);
 		
-		System.out.print("The total revuenue is: ");
-		System.out.println(Double.toString(totalRev));
+		System.out.print("The total revenue is: $");
+		System.out.println(Double.toString(totalRev) + " in CAD");
+		
+		double totalRevUSD = getTotalRevenueUSD();
+		System.out.print("The total revenue is: $");
+		System.out.println(Double.toString(totalRevUSD) + " in USD");
 	}
 }
